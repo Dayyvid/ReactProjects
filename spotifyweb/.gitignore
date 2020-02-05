@@ -1,0 +1,6 @@
+# dependencies
+/node_modules
+/dist
+
+#client variables
+config.js
