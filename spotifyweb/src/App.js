@@ -41,12 +41,30 @@ class App extends Component {
         spotifyWebApi.getMyTopArtists()
         .then((response) => {
             var topArtistsArray = new Array();
+            var topGenreObject = new Object();
             response.items.forEach(function(element) {
                 topArtistsArray.push(element.name)
+                element.genres.forEach(function(genre) {
+                    if (genre in topGenreObject){
+                        topGenreObject[genre] += 1;
+                    } else {
+                        topGenreObject[genre] = 1;
+                    }
+                })
             });
+
+            var sortedTopGenreArray = [];
+            for(var genre in topGenreObject){
+                sortedTopGenreArray.push([genre, topGenreObject[genre]]);
+            }
+            sortedTopGenreArray.sort(function(a,b){
+                return b[1] - a[1];
+            });
+
             this.setState({
                 clickedTopArtistsFlag: true,
-                topArtists: topArtistsArray
+                topArtists: topArtistsArray.slice(0,6),
+                topGenres: sortedTopGenreArray.slice(0,6),
             });
         })
     }
@@ -63,15 +81,26 @@ class App extends Component {
             if(!this.state.gotUserInfo){
                 this.getMe();
             }
+
             const topArtistsRender = this.state.clickedTopArtistsFlag? 
             this.state.topArtists.map((element) => <li key = {element}>{element}</li>): 
-            <button onClick={() => this.getMyTopArtists()}> Get Top Artists</button>;
+            <button onClick={() => this.getMyTopArtists()}> Get Top Artists and Genres</button>;
+
+            const topGenresRender = this.state.clickedTopArtistsFlag?
+            this.state.topGenres.map((element) => <li key = {element}>{element[0]} : {element[1]}</li>): 
+            null;
+
             return(
                 <div>
                     <h1> Hello {this.state.userName}!</h1>
                     <img src = {this.state.userImage}></img>
                     <br></br>
-                    {topArtistsRender}
+                    <div className="topArtistsRender">
+                        <ul> {topArtistsRender} </ul>
+                    </div>
+                    <div className="topGenresRender">
+                        <ul> {topGenresRender} </ul>
+                    </div>
                 </div>
             );
         }
