@@ -23,7 +23,11 @@
   },
   "dependencies": {
     "babel-preset-env": "^1.7.0",
+    "bootstrap": "^4.4.1",
+    "jquery": "^3.4.1",
+    "popper.js": "^1.16.1",
     "react": "^16.12.0",
+    "react-bootstrap": "^1.0.0-beta.16",
     "react-dom": "^16.12.0",
     "react-hot-loader": "^4.12.19",
     "request": "^2.88.0",
