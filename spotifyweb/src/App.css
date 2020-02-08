@@ -11,6 +11,10 @@
     display: inline-block;
 }
 
+.topTracksRender{
+    display: inline-block;
+}
+
 img{
     width: 250px;
     height: 250px;

@@ -13,7 +13,7 @@ class Picker extends Component{
         this.state = {
             loggedIn: params.access_token?  true: false,
             gotUserInfo: false,
-            topArtistsGenresChosen: false,
+            topArtistsTracksGenresChosen: false,
         }
         if (params.access_token){
             spotifyWebApi.setAccessToken(params.access_token)
@@ -41,14 +41,14 @@ class Picker extends Component{
     }
     userPicked() {
         this.setState({
-            topArtistsGenresChosen: true,
+            topArtistsTracksGenresChosen: true,
         })
-        console.log(this.state.topArtistsGenresChosenz);
-        console.log(this.state);
+        // if choose others, then set topArtistsTracksGenresChosen to false
     }
 
     // if choose top artist/genre
     render() {
+        var displayText;
         if(!this.state.gotUserInfo){
             this.getMe();
         }
@@ -62,26 +62,29 @@ class Picker extends Component{
                         Choose an action
                     </Dropdown.Toggle>
                     <Dropdown.Menu>
-                        <Dropdown.Item onClick={() => this.userPicked()}> Get Top Artists and Genres </Dropdown.Item>
+                        <Dropdown.Item onClick={() => this.userPicked()}> Get your top artists, tracks, and genres </Dropdown.Item>
                         <Dropdown.Item href="#"> b </Dropdown.Item>
                         <Dropdown.Item href="#"> c </Dropdown.Item>
                     </Dropdown.Menu>
                 </Dropdown>
                 <div>
-                <TopArtistsGenres chosen={this.state.topArtistsGenresChosen} />
+                {this.state.topArtistsTracksGenresChosen?displayText = "Your top artists, tracks, and genres are: " : ''}
+                <TopArtistsTracksGenres chosen={this.state.topArtistsTracksGenresChosen} />
                 </div>
             </div>
         );
     }
 }
-class TopArtistsGenres extends Picker {
+class TopArtistsTracksGenres extends Picker {
     constructor(props){
         super(props);
         this.state = {
             topArtistsArray: [],
             topGenreArray: [],
+            topTracksArray: [],
         };
         this.getMyTopArtists();
+        this.getMyTopTracks();
     }
 
     getMyTopArtists(){
@@ -109,20 +112,36 @@ class TopArtistsGenres extends Picker {
                 return b[1] - a[1];
             });
             this.setState({
-                topArtistsArray: topArtistsArray.slice(0,6),
-                topGenreArray: sortedTopGenreArray.slice(0,6)
+                topArtistsArray: topArtistsArray.slice(0,5),
+                topGenreArray: sortedTopGenreArray.slice(0,5)
             })
         })
 
+    }
+    getMyTopTracks(){
+        spotifyWebApi.getMyTopTracks()
+        .then((response) => {
+            var topTracksArray = new Array();
+            response.items.forEach(function(element){
+                topTracksArray.push(element.name);
+            });
+            this.setState({
+                topTracksArray: topTracksArray.slice(0,5),
+            })
+        })
     }
     render() {
         if (this.props.chosen === true) {
             const topArtistsRender = this.state.topArtistsArray.map((element) => <li key = {element}>{element}</li>);
             const topGenresRender = this.state.topGenreArray.map((element) => <li key = {element}>{element[0]} : {element[1]}</li>);
+            const topTracksRender = this.state.topTracksArray.map((element) => <li key = {element}>{element}</li>);
             return (
                 <div>
                     <div className="topArtistsRender">
                         <ul> {topArtistsRender} </ul>
+                    </div>
+                    <div className="topTracksRender">
+                        <ul> {topTracksRender} </ul>
                     </div>
                     <div className="topGenresRender">
                         <ul> {topGenresRender} </ul>
