@@ -48,6 +48,7 @@ class Picker extends Component{
     // if choose top artist/genre
     render() {
         var displayText = '';
+        
         if(!this.state.gotUserInfo){
             this.getMe();
         }
@@ -66,12 +67,12 @@ class Picker extends Component{
                     <Dropdown.Menu>
                         <Dropdown.Item onClick={() => this.userPickedFromDropdown("ArtistsTracksGenres")}> Get your top artists, tracks, and genres </Dropdown.Item>
                         <Dropdown.Item onClick={() => this.userPickedFromDropdown("Recommendations")}> Get your music recommendations </Dropdown.Item>
-                        <Dropdown.Item href="#"> c </Dropdown.Item>
+                        <Dropdown.Item > c </Dropdown.Item>
                     </Dropdown.Menu>
                 </Dropdown>
                 <div>
                 {displayText}
-                <PersonalMusicInfo mode={this.state.personalMusicInfoMode} />
+                {<PersonalMusicInfo mode={this.state.personalMusicInfoMode} />}
                 </div>
             </div>
         );
@@ -91,9 +92,22 @@ class PersonalMusicInfo extends Picker {
             numberOfSeedArtists: Math.round(Math.random() * 5),
             seedArtistsIDArray: [],
             seedTracksIDArray: [],
+            didRecommend: false,
+            recommendedTracksArray: [],
         };
         this.getMyTopArtists();
         this.getMyTopTracks();
+    }
+
+    static getDerivedStateFromProps(props, state){
+        if(props){
+            if(props.mode === "ArtistsTracksGenres"){
+                return {
+                    didRecommend: false,
+                }
+            }
+        }
+        return null;
     }
 
     getMyTopArtists(){
@@ -170,10 +184,22 @@ class PersonalMusicInfo extends Picker {
     }
 
     getMyRecommendations(){
+        // prevents rerenders
+        if(this.state.didRecommend){
+            return;
+        }
         spotifyWebApi.getRecommendations({time_range: 'medium_term', limit:10, seed_artists: this.state.seedArtistsIDArray,
     seed_tracks: this.state.seedTracksIDArray})
         .then((response) => {
-            console.log(response)
+            var recommendedTracksArrayTemp = new Array();
+            response.tracks.forEach(function(element){
+                recommendedTracksArrayTemp.push(element.name);
+            })
+            this.setState({
+                recommendedTracksArray: recommendedTracksArrayTemp,
+                didRecommend: true,
+            })
+            console.log(response);
         })
     }
     
@@ -196,11 +222,11 @@ class PersonalMusicInfo extends Picker {
                 </div>
             )
         } else if (this.props.mode === "Recommendations"){
+            const recommendedTracksRender = this.state.recommendedTracksArray.map((element) => <li key = {element}> {element}</li>)
             this.getMyRecommendations();
-            const testRender = "test";
             return(
                 <div>
-                    {testRender}
+                    {recommendedTracksRender}
                 </div>
             )
         } else {
@@ -208,6 +234,7 @@ class PersonalMusicInfo extends Picker {
         }
     }
 }
+
 class App extends Component {
     constructor(props) {
         super(props);
