@@ -193,7 +193,7 @@ class PersonalMusicInfo extends Picker {
         .then((response) => {
             var recommendedTracksArrayTemp = new Array();
             response.tracks.forEach(function(element){
-                recommendedTracksArrayTemp.push(element.name);
+                recommendedTracksArrayTemp.push([element.name, element.artists[0].name]);
             })
             this.setState({
                 recommendedTracksArray: recommendedTracksArrayTemp,
@@ -222,7 +222,7 @@ class PersonalMusicInfo extends Picker {
                 </div>
             )
         } else if (this.props.mode === "Recommendations"){
-            const recommendedTracksRender = this.state.recommendedTracksArray.map((element) => <li key = {element}> {element}</li>)
+            const recommendedTracksRender = this.state.recommendedTracksArray.map((element) => <li key = {element}> {element[0]} by {element[1]}</li>)
             this.getMyRecommendations();
             return(
                 <div>
