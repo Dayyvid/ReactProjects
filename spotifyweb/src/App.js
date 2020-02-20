@@ -67,7 +67,6 @@ class Picker extends Component{
                     <Dropdown.Menu>
                         <Dropdown.Item onClick={() => this.userPickedFromDropdown("ArtistsTracksGenres")}> Get your top artists, tracks, and genres </Dropdown.Item>
                         <Dropdown.Item onClick={() => this.userPickedFromDropdown("Recommendations")}> Get your music recommendations </Dropdown.Item>
-                        <Dropdown.Item > c </Dropdown.Item>
                     </Dropdown.Menu>
                 </Dropdown>
                 <div>
